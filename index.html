@@ -67,6 +67,20 @@
       </div>
       <p id="statusMessage" class="mt-4 text-center text-sm text-gray-600"></p>
     </form>
+
+    <div id="outputSection" class="mt-6 hidden">
+      <h2 class="text-xl font-semibold mb-2 text-center">Datos Ingresados</h2>
+      <div class="overflow-x-auto">
+        <table id="outputTable" class="w-full table-auto border-collapse">
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="text-center mt-4">
+        <button id="copyBtn" class="bg-blue-600 text-white px-6 py-2 rounded-2xl hover:bg-blue-700 transition">
+          Copiar Datos
+        </button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -75,6 +89,24 @@
 
     const form = document.getElementById('registroForm');
     const statusMessage = document.getElementById('statusMessage');
+    const outputSection = document.getElementById('outputSection');
+    const outputTable = document.getElementById('outputTable');
+    const copyBtn = document.getElementById('copyBtn');
+
+    const fields = [
+      { key: 'grado', label: 'Grado' },
+      { key: 'nombres', label: 'Nombres' },
+      { key: 'apellidos', label: 'Apellidos' },
+      { key: 'rut', label: 'RUT' },
+      { key: 'departamento', label: 'Depto. / Sección' },
+      { key: 'id_plase', label: 'ID Plase' },
+      { key: 'id_sigpryma', label: 'ID Sigpryma' },
+      { key: 'numero_rol', label: 'Número de Rol' },
+      { key: 'oficial', label: 'Oficial Investigador' },
+      { key: 'dependencia', label: 'Dependencia' },
+      { key: 'resolucion', label: 'Resolución' },
+      { key: 'observacion', label: 'Observación' }
+    ];
 
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -84,6 +116,7 @@
       const data = {};
       formData.forEach((value, key) => data[key] = value);
 
+      // Envío a Google Sheets
       fetch(scriptURL, {
         method: 'POST',
         mode: 'no-cors',
@@ -92,12 +125,42 @@
       })
       .then(() => {
         statusMessage.textContent = '¡Registro enviado con éxito!';
+        displayData(data);
         form.reset();
       })
       .catch(err => {
         console.error(err);
         statusMessage.textContent = 'Error al enviar. Revisa la consola.';
+        displayData(data);
       });
+    });
+
+    function displayData(data) {
+      const tbody = outputTable.querySelector('tbody');
+      tbody.innerHTML = '';
+      fields.forEach(field => {
+        const tr = document.createElement('tr');
+        const th = document.createElement('th');
+        th.textContent = field.label;
+        th.className = 'px-4 py-2 text-left bg-gray-100 border';
+        const td = document.createElement('td');
+        td.textContent = data[field.key] || '';
+        td.className = 'px-4 py-2 border';
+        tr.append(th, td);
+        tbody.appendChild(tr);
+      });
+      outputSection.classList.remove('hidden');
+    }
+
+    copyBtn.addEventListener('click', () => {
+      const range = document.createRange();
+      range.selectNode(outputSection);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      sel.removeAllRanges();
+      alert('Datos copiados al portapapeles');
     });
   </script>
 </body>
