@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Personal</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-xl">
+    <h1 class="text-2xl font-semibold mb-4 text-center">Registro de Personal</h1>
+    <form id="registroForm" class="space-y-4">
+      <div>
+        <label class="block font-medium">Grado</label>
+        <input type="text" name="grado" class="w-full mt-1 p-2 border rounded" placeholder="Ej: Subteniente" required />
+      </div>
+      <div>
+        <label class="block font-medium">Nombres</label>
+        <input type="text" name="nombres" class="w-full mt-1 p-2 border rounded" placeholder="Ej: Juan Pablo" required />
+      </div>
+      <div>
+        <label class="block font-medium">Apellidos</label>
+        <input type="text" name="apellidos" class="w-full mt-1 p-2 border rounded" placeholder="Ej: Pérez González" required />
+      </div>
+      <div>
+        <label class="block font-medium">RUT</label>
+        <input type="text" name="rut" class="w-full mt-1 p-2 border rounded" placeholder="Ej: 12.345.678-9" required />
+      </div>
+      <div>
+        <label class="block font-medium">Depto. / Sección</label>
+        <input type="text" name="departamento" class="w-full mt-1 p-2 border rounded" placeholder="Ej: OS9" required />
+      </div>
+      <div>
+        <label class="block font-medium">ID Plase</label>
+        <input type="text" name="id_plase" class="w-full mt-1 p-2 border rounded" required />
+      </div>
+      <div>
+        <label class="block font-medium">ID Sigpryma</label>
+        <input type="text" name="id_sigpryma" class="w-full mt-1 p-2 border rounded" required />
+      </div>
+      <div>
+        <label class="block font-medium">Número de Rol</label>
+        <input type="text" name="numero_rol" class="w-full mt-1 p-2 border rounded" required />
+      </div>
+      <div>
+        <label class="block font-medium">Oficial Investigador</label>
+        <input type="text" name="oficial" class="w-full mt-1 p-2 border rounded" required />
+      </div>
+      <div>
+        <label class="block font-medium">Dependencia</label>
+        <input type="text" name="dependencia" class="w-full mt-1 p-2 border rounded" required />
+      </div>
+      <div>
+        <label class="block font-medium">Resolución</label>
+        <input type="text" name="resolucion" class="w-full mt-1 p-2 border rounded" required />
+      </div>
+      <div>
+        <label class="block font-medium">Observación</label>
+        <input type="text" name="observacion" class="w-full mt-1 p-2 border rounded" placeholder="Opcional" />
+      </div>
+
+      <div class="text-center">
+        <button id="submitBtn" type="submit" class="bg-green-600 text-white px-6 py-2 rounded-2xl hover:bg-green-700 transition">
+          Enviar Registro
+        </button>
+      </div>
+      <p id="statusMessage" class="mt-4 text-center text-sm text-gray-600"></p>
+    </form>
+  </div>
+
+  <script>
+    // Reemplaza esta URL con la de tu Apps Script (Deploy > New deployment > Web app)
+    const scriptURL = 'TU_APPS_SCRIPT_URL_AQUI';
+
+    const form = document.getElementById('registroForm');
+    const statusMessage = document.getElementById('statusMessage');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      statusMessage.textContent = 'Enviando...';
+
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => data[key] = value);
+
+      fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(() => {
+        statusMessage.textContent = '¡Registro enviado con éxito!';
+        form.reset();
+      })
+      .catch(err => {
+        console.error(err);
+        statusMessage.textContent = 'Error al enviar. Revisa la consola.';
+      });
+    });
+  </script>
+</body>
+</html>
